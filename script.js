@@ -457,29 +457,59 @@ columns_list = json.loads('${JSON.stringify(dataColumns)}')
 # Create DataFrame
 df = pd.DataFrame(data_dict)
 
-# Convert all columns to numeric
-for col in df.columns:
-    df[col] = pd.to_numeric(df[col], errors='coerce')
+# Convert numeric columns only, preserve categorical
+numeric_cols = df.select_dtypes(include=['object']).columns
+for col in numeric_cols:
+    # Try to convert to numeric, but only if it makes sense
+    converted = pd.to_numeric(df[col], errors='coerce')
+    if not converted.isna().all():  # Only convert if at least some values are numeric
+        df[col] = converted
 
-# Fill missing values with median
-df = df.fillna(df.median())
+# Handle missing values more carefully
+if df.empty:
+    raise ValueError("DataFrame is empty after processing")
+else:
+    # Fill NaN values only if there are valid values to compute median/mode
+    for col in df.columns:
+        if df[col].isna().all():
+            df[col] = 0 if df[col].dtype in ['float64', 'int64'] else 'Unknown'
+        elif df[col].dtype in ['float64', 'int64']:
+            df[col] = df[col].fillna(df[col].median())
+        else:
+            mode_val = df[col].mode()
+            df[col] = df[col].fillna(mode_val[0] if len(mode_val) > 0 else 'Unknown')
 
-print("Data preparation completed")
-print("DataFrame Info:")
-print(df.info())
-    `);
+# Only drop rows if we still have data
+if not df.empty:
+    initial_rows = len(df)
+    df = df.dropna()
 
-    // Execute the user's code
-    console.log("Executing user code:", currentCode);
-    await pyodide.runPythonAsync(`
-# Execute user code in global scope
-${currentCode}
+# Execute user code
+exec("""
+try:
+${currentCode.split('\n').map(line => '    ' + line).join('\n')}
+except TypeError as e:
+    if "Cannot convert" in str(e) and "to numeric" in str(e):
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())
+        
+        # Re-run the corrected code
+${currentCode.replace('df.fillna(df.median(), inplace=True)', 'numeric_cols = df.select_dtypes(include=[np.number]).columns; df[numeric_cols] = df[numeric_cols].fillna(df[numeric_cols].median())').split('\n').map(line => '        ' + line).join('\n')}
+    else:
+        raise
+""")
 
 # Store X and y in global scope if not already there
 if 'X' not in globals():
     X = df[df.columns[:-1]]
 if 'y' not in globals():
     y = df[df.columns[-1]]
+
+# Validate data before model training
+if len(X) == 0:
+    raise ValueError("No samples available for training. Check your data preprocessing.")
+if y.isna().any():
+    raise ValueError("Target variable contains NaN values. Check your data cleaning.")
 
 # Ensure model exists
 if 'model' not in globals():
@@ -540,25 +570,16 @@ def process_tree():
         if not isinstance(result_dict['feature_names'], list):
             raise ValueError("Feature names is not a list")
         
-        print("Result structure verified")
-        print("Tree keys:", list(result_dict['tree'].keys()))
-        print("Metrics keys:", list(result_dict['metrics'].keys()))
-        
         # Serialize with error checking
         try:
             result_json = json.dumps(result_dict)
-            print("JSON serialization successful")
-            print("JSON length:", len(result_json))
             return result_json
         except Exception as json_error:
-            print("JSON serialization failed:", str(json_error))
-            print("Result dict:", result_dict)
             raise ValueError(f"Failed to serialize result: {str(json_error)}")
 
     except Exception as e:
         import traceback
         error_details = traceback.format_exc()
-        print("Error details:", error_details)
         raise ValueError(str(e))
 
 # Call the function and return its result
@@ -566,11 +587,8 @@ process_tree()
 `);
     
     if (!resultJson) {
-        console.error("No JSON returned from Python");
         throw new Error("Failed to get result from Python - no JSON returned");
     }
-
-    console.log("Raw result from Python:", resultJson);  // Add this line for debugging
     
     try {
         const result = JSON.parse(resultJson);
@@ -591,11 +609,6 @@ process_tree()
             throw new Error("Missing or invalid feature names in result");
         }
         
-        console.log("Result validation passed");
-        console.log("Tree structure:", result.tree);
-        console.log("Metrics:", result.metrics);
-        console.log("Feature names:", result.feature_names);
-        
         currentDecisionTree = result;
         displayDecisionTree(result.tree);
         displayMetrics(result.metrics);
@@ -603,13 +616,10 @@ process_tree()
         document.getElementById("step5").classList.remove("d-none");
         
     } catch (parseError) {
-        console.error("JSON parse error:", parseError);
-        console.error("Raw JSON:", resultJson);
         throw new Error(`Failed to parse Python result: ${parseError.message}`);
     }
     
   } catch (error) {
-    console.error("Python execution error:", error);
     throw new Error(`Python execution failed: ${error.message}`);
   }
 }
@@ -617,7 +627,37 @@ process_tree()
 // Display decision tree
 function displayDecisionTree(tree) {
   const container = document.getElementById("decisionTree");
-  container.innerHTML = renderTreeCollapsible(tree);
+  
+  // Add expand/collapse button
+  const buttonHtml = `
+    <div class="mb-3">
+      <button id="expandAllBtn" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-arrows-expand me-1"></i>
+        Expand All
+      </button>
+    </div>
+  `;
+  
+  // Render tree with button
+  container.innerHTML = buttonHtml + renderTreeCollapsible(tree);
+  
+  // Add click handler for expand/collapse
+  const expandAllBtn = document.getElementById("expandAllBtn");
+  let isExpanded = false;
+  
+  expandAllBtn.addEventListener("click", () => {
+    const details = container.querySelectorAll("details");
+    isExpanded = !isExpanded;
+    
+    details.forEach(detail => {
+      detail.open = isExpanded;
+    });
+    
+    // Update button text
+    expandAllBtn.innerHTML = isExpanded ? 
+      '<i class="bi bi-arrows-collapse me-1"></i>Collapse All' :
+      '<i class="bi bi-arrows-expand me-1"></i>Expand All';
+  });
 }
 
 // Display metrics
