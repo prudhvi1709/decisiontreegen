@@ -1,0 +1,44 @@
+{
+  "sampleDatasets": [
+    {
+      "icon": "bi-heart-pulse",
+      "title": "Heart Disease",
+      "description": "Predict heart disease risk based on medical indicators",
+      "target": "target",
+      "url": "https://raw.githubusercontent.com/gramener/datasets/refs/heads/main/heart_disease_cleveland.csv"
+    },
+    {
+      "icon": "bi-house",
+      "title": "Housing Prices",
+      "description": "Predict housing prices based on location and features",
+      "target": "price",
+      "url": "https://raw.githubusercontent.com/selva86/datasets/master/BostonHousing.csv"
+    },
+    {
+      "icon": "bi-flower1",
+      "title": "Iris Classification",
+      "description": "Classify iris flowers based on petal and sepal measurements",
+      "target": "species",
+      "url": "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/iris.csv"
+    },
+    {
+      "icon": "bi-cup-hot",
+      "title": "Wine Quality",
+      "description": "Predict wine quality based on chemical properties",
+      "target": "quality",
+      "url": "https://raw.githubusercontent.com/gramener/datasets/refs/heads/main/winequality-red.csv"
+    },
+    {
+      "icon": "bi-person-check",
+      "title": "Student Performance",
+      "description": "Predict student performance in secondary education (high school)",
+      "target": "G3",
+      "url": "https://raw.githubusercontent.com/gramener/datasets/refs/heads/main/student_mat.csv"
+    }
+  ],
+  "defaultSettings": {
+    "baseUrl": "https://llmfoundry.straive.com/openai/v1",
+    "model": "gpt-4.1-mini",
+    "maxDepth": 5
+  }
+}
