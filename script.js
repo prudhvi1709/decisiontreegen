@@ -11,10 +11,9 @@ let currentData = null,
 async function loadConfig() {
   const response = await fetch("config.json");
   config = await response.json();
-  const { baseUrl, model, maxDepth } = config.defaultSettings;
+  const { baseUrl, model } = config.defaultSettings;
   document.getElementById("baseUrlInput").value = baseUrl;
   document.getElementById("modelInput").value = model;
-  document.getElementById("maxDepth").value = maxDepth;
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -32,7 +31,6 @@ function setupEventListeners() {
   document
     .getElementById("targetColumn")
     .addEventListener("change", updatePrompt);
-  document.getElementById("maxDepth").addEventListener("change", updatePrompt);
   document.getElementById("analyzeBtn").addEventListener("click", (e) => {
     e.preventDefault();
     analyzeData().catch((error) =>
@@ -80,10 +78,9 @@ function processData(data, defaultTarget = null) {
 
 function updatePrompt() {
   const target = document.getElementById("targetColumn").value;
-  const depth = document.getElementById("maxDepth").value;
   document.getElementById(
     "promptText"
-  ).value = `Predict ${target} using a decision tree. Max depth: ${depth}.`;
+  ).value = `Predict ${target} using a decision tree with max_depth=5.`;
 }
 
 async function analyzeData() {
@@ -132,7 +129,7 @@ Notes:
 - All necessary imports are already done (pandas, numpy, sklearn)
 - Use DecisionTreeRegressor for numeric targets
 - Use DecisionTreeClassifier for categorical targets
-- Set appropriate hyperparameters (e.g., max_depth)
+- Set max_depth=5 as the default hyperparameter
 
 Example:
 \`\`\`python

@@ -23,16 +23,28 @@ export function markdownToHtml(markdown) {
   return markdown ? marked.parse(markdown) : "";
 }
 
-export function renderTreeCollapsible(node) {
+export function renderTreeCollapsible(node, branchLabel = null) {
   if (node.prediction !== undefined) {
-    return `<div class="alert alert-success border-success text-break">
-      <i class="bi bi-check-circle-fill me-2"></i>
-      <strong>Prediction:</strong> <span class="badge bg-success ms-2">${node.prediction}</span>
-    </div>`;
+    // Render YES/NO badge and prediction in a flex row if branchLabel is provided
+    if (branchLabel) {
+      return `<div style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.25em;">
+        <span class="badge bg-${branchLabel === 'YES' ? 'success' : 'danger'} me-2">${branchLabel}</span>
+        <span class="alert alert-success border-success text-break mb-0 py-1 px-2 d-inline-flex align-items-center" style="font-size: 1em;">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          <strong>Prediction:</strong> <span class="badge bg-success ms-2">${node.prediction}</span>
+        </span>
+      </div>`;
+    } else {
+      // Root node prediction (shouldn't happen, but fallback)
+      return `<span class="alert alert-success border-success text-break">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <strong>Prediction:</strong> <span class="badge bg-success ms-2">${node.prediction}</span>
+      </span>`;
+    }
   }
-  
+
   const threshold = typeof node.threshold === "number" ? node.threshold.toFixed(3) : node.threshold;
-  
+
   return `
     <details class="mb-2">
       <summary class="text-break fw-bold text-primary cursor-pointer" style="cursor: pointer;">
@@ -40,14 +52,8 @@ export function renderTreeCollapsible(node) {
         Is <strong>${node.feature}</strong> &lt; <strong>${threshold}</strong>?
       </summary>
       <div class="ms-4 mt-2">
-        <div class="mb-2">
-          <span class="badge bg-success me-2">YES</span>
-          ${renderTreeCollapsible(node.left)}
-        </div>
-        <div>
-          <span class="badge bg-danger me-2">NO</span>
-          ${renderTreeCollapsible(node.right)}
-        </div>
+        ${renderTreeCollapsible(node.left, 'YES')}
+        ${renderTreeCollapsible(node.right, 'NO')}
       </div>
     </details>
   `;

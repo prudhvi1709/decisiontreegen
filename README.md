@@ -39,7 +39,6 @@ An interactive web application for building and visualizing decision trees from 
 
 3. **Configure Analysis**:
    - Select your target column
-   - Adjust the maximum tree depth (1-20)
    - Review and modify the analysis prompt if needed
 
 4. **Generate Tree**:
