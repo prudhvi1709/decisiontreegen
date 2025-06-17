@@ -33,7 +33,7 @@
       "title": "Student Performance",
       "description": "Predict student performance in secondary education (high school)",
       "target": "G3",
-      "url": "https://raw.githubusercontent.com/gramener/datasets/refs/heads/main/student_mat.csv"
+      "url": "https://raw.githubusercontent.com/gramener/datasets/refs/heads/main/student-mat.csv"
     }
   ],
   "defaultSettings": {
