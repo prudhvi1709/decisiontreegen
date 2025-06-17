@@ -1,16 +1,17 @@
 # Decision Tree Builder 🌳
 
-A modern, interactive web application for building and visualizing decision trees from your data. Built with Python, JavaScript, and powered by machine learning.
+An interactive web application for building and visualizing decision trees from your data. Built with JavaScript and Python (via Pyodide), this tool helps you analyze datasets and create decision trees with an intuitive interface.
 
 ## 🌟 Features
 
 - **Interactive Data Upload**: Support for CSV and XLSX file formats
 - **Sample Datasets**: Pre-configured datasets for quick experimentation
-- **Real-time Analysis**: Powered by OpenAI's GPT models for intelligent data analysis
-- **Interactive Visualization**: Collapsible tree visualization for easy exploration
-- **Performance Metrics**: Comprehensive model evaluation metrics
-- **Revision System**: Ability to refine and improve the analysis
+- **Modern UI**: Clean, responsive Bootstrap 5 interface with intuitive step-by-step workflow
+- **Interactive Visualization**: Easy-to-read decision tree output
+- **Performance Metrics**: View model evaluation metrics including accuracy, precision, and more
+- **Revision System**: Ability to refine and improve your analysis
 - **Python Integration**: Seamless Python execution in the browser using Pyodide
+- **LLM Integration**: Powered by LLM Foundry for intelligent data analysis
 
 ## 🚀 Getting Started
 
@@ -22,41 +23,53 @@ A modern, interactive web application for building and visualizing decision tree
 
 2. Open `index.html` in a modern web browser.
 
-3. Configure your OpenAI API key in the advanced settings.
+3. Configure your API settings in the advanced settings panel.
 
 ## 📊 Using the Application
 
-1. **Upload Data**:
+1. **Configure Settings** (Optional):
+   - Set your API key in the advanced settings
+   - Choose your preferred base URL
+   - Select the LLM model to use
+
+2. **Upload Data**:
    - Use the file upload button to select your CSV/XLSX file
    - Or choose from the available sample datasets
+   - Preview your data before proceeding
 
-2. **Configure Analysis**:
+3. **Configure Analysis**:
    - Select your target column
-   - Adjust the maximum tree depth
+   - Adjust the maximum tree depth (1-20)
    - Review and modify the analysis prompt if needed
 
-3. **Generate Tree**:
+4. **Generate Tree**:
    - Click "Analyze" to build your decision tree
-   - View the generated Python code
-   - Explore the interactive tree visualization
+   - View the generated Python code in the collapsible panel
+   - Examine the decision tree visualization
 
-4. **Review Results**:
+5. **Review Results**:
    - Examine model performance metrics
-   - Use the collapsible tree interface to understand decision paths
+   - Understand the decision paths
 
-5. **Refine Analysis**:
+6. **Refine Analysis** (Optional):
    - Add revision instructions
    - Click "Revise Analysis" to improve the model
 
 ## 🔧 Advanced Settings
 
-- **API Configuration**: Set your OpenAI API key and base URL
-- **Model Selection**: Choose from available GPT models
-- **Tree Depth**: Control the complexity of your decision tree
+- **API Configuration**: 
+  - OpenAI API Key setup
+  - Configurable base URL with preset options
+- **Model Selection**: Choose from available models:
+  - gpt-4.1-nano
+  - gpt-4.1-mini
+  - gpt-4o-mini
+  - o3-mini
+- **Tree Parameters**: Control tree depth (1-20)
 
 ## 📈 Performance Metrics
 
-The application provides comprehensive model evaluation metrics:
+The application provides key model evaluation metrics:
 - Accuracy
 - Precision
 - Recall
@@ -66,17 +79,25 @@ The application provides comprehensive model evaluation metrics:
 
 ## 🛠️ Technical Stack
 
-- **Frontend**: HTML5, Bootstrap 5, JavaScript (ES6+)
-- **Machine Learning**: Python, scikit-learn
-- **Python Runtime**: Pyodide
-- **AI Integration**: OpenAI API Through LLM FOUNDRY
-- **Data Processing**: Pandas, NumPy
+- **Frontend**: 
+  - HTML5
+  - Bootstrap 5
+  - JavaScript (ES6+)
+  - Bootstrap Icons
+- **Machine Learning**: 
+  - Python (via Pyodide)
+  - scikit-learn
+- **Data Processing**: 
+  - Pandas
+  - NumPy
+- **AI Integration**:
+  - LLM Foundry API
 
 ## 🔒 Security
 
-- API keys are stored locally in the browser
-- No data is sent to external servers except OpenAI API
-- All processing happens in your browser
+- API keys are stored locally in browser storage
+- No data is sent to external servers except the LLM API
+- All processing happens in your browser using Pyodide
 
 ## 📝 License
 
