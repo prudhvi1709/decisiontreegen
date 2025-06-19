@@ -1,8 +1,8 @@
-# Decision Tree Builder 🌳
+# Decision Tree Builder
 
 An interactive web application for building and visualizing decision trees from your data. Built with JavaScript and Python (via Pyodide), this tool helps you analyze datasets and create decision trees with an intuitive interface.
 
-## 🌟 Features
+## Features
 
 - **Interactive Data Upload**: Support for CSV and XLSX file formats
 - **Sample Datasets**: Pre-configured datasets for quick experimentation
@@ -13,7 +13,7 @@ An interactive web application for building and visualizing decision trees from 
 - **Python Integration**: Seamless Python execution in the browser using Pyodide
 - **LLM Integration**: Powered by LLM Foundry for intelligent data analysis
 
-## 🚀 Getting Started
+## Getting Started
 
 1. Clone the repository:
    ```bash
@@ -25,7 +25,7 @@ An interactive web application for building and visualizing decision trees from 
 
 3. Configure your API settings in the advanced settings panel.
 
-## 📊 Using the Application
+## Using the Application
 
 1. **Configure Settings** (Optional):
    - Set your API key in the advanced settings
@@ -54,7 +54,7 @@ An interactive web application for building and visualizing decision trees from 
    - Add revision instructions
    - Click "Revise Analysis" to improve the model
 
-## 🔧 Advanced Settings
+## Advanced Settings
 
 - **API Configuration**: 
   - OpenAI API Key setup
@@ -66,7 +66,7 @@ An interactive web application for building and visualizing decision trees from 
   - o3-mini
 - **Tree Parameters**: Control tree depth (1-20)
 
-## 📈 Performance Metrics
+## Performance Metrics
 
 The application provides key model evaluation metrics:
 - Accuracy
@@ -76,7 +76,7 @@ The application provides key model evaluation metrics:
 - False Positives
 - False Negatives
 
-## 🛠️ Technical Stack
+## Technical Stack
 
 - **Frontend**: 
   - HTML5
@@ -92,22 +92,20 @@ The application provides key model evaluation metrics:
 - **AI Integration**:
   - LLM Foundry API
 
-## 🔒 Security
+## Security
 
 - API keys are stored locally in browser storage
 - No data is sent to external servers except the LLM API
 - All processing happens in your browser using Pyodide
 
-## 📝 License
+## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📞 Support
+## Support
 
-If you encounter any issues or have questions, please open an issue in the GitHub repository.
-
---- 
+If you encounter any issues or have questions, please open an issue in the GitHub repository. 
