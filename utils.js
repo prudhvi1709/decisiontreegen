@@ -29,16 +29,16 @@ export function renderTreeCollapsible(node, branchLabel = null) {
     if (branchLabel) {
       return `<div style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.25em;">
         <span class="badge bg-${branchLabel === 'YES' ? 'success' : 'danger'} me-2">${branchLabel}</span>
-        <span class="alert alert-success border-success text-break mb-0 py-1 px-2 d-inline-flex align-items-center" style="font-size: 1em;">
+        <span class="d-inline-flex align-items-center" style="font-size: 1em;">
           <i class="bi bi-check-circle-fill me-2"></i>
-          <strong>Prediction:</strong> <span class="badge bg-success ms-2">${node.prediction}</span>
+          <strong>Prediction:</strong> <span class="ms-2">${node.prediction}</span>
         </span>
       </div>`;
     } else {
       // Root node prediction (shouldn't happen, but fallback)
-      return `<span class="alert alert-success border-success text-break">
+      return `<span class="d-inline-flex align-items-center">
         <i class="bi bi-check-circle-fill me-2"></i>
-        <strong>Prediction:</strong> <span class="badge bg-success ms-2">${node.prediction}</span>
+        <strong>Prediction:</strong> <span class="ms-2">${node.prediction}</span>
       </span>`;
     }
   }
