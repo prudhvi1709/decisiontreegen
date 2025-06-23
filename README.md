@@ -17,6 +17,50 @@ An interactive web application for building and visualizing decision trees from 
 - **Python Integration**: Seamless Python execution in the browser using Pyodide
 - **LLM Integration**: Powered by LLM Foundry for intelligent data analysis
 
+## Workflow
+
+```mermaid
+flowchart TD
+    A[Start Application] --> B[Configure Settings]
+    B --> C{Upload Data}
+    C --> D[Upload CSV/XLSX File]
+    C --> E[Choose Sample Dataset]
+    D --> F[Preview Data]
+    E --> F
+    F --> G{Enable Derived Metrics?}
+    G -->|Yes| H[Select Columns for Derived Features]
+    G -->|No| I[Configure Analysis]
+    H --> J[Generate AI-Powered Derived Metrics]
+    J --> K[Preview Enhanced Dataset]
+    K --> L[Select Derived Metrics to Include]
+    L --> I
+    I --> M[Select Target Column]
+    M --> N[Review Analysis Prompt]
+    N --> O[Generate Decision Tree]
+    O --> P[View Python Code]
+    P --> Q[Examine Tree Visualization]
+    Q --> R[Review Performance Metrics]
+    R --> S{Interactive Analysis?}
+    S -->|Yes| T[Ask Natural Language Questions]
+    T --> U[AI Analyzes Question]
+    U --> V[Highlight Relevant Tree Sections]
+    V --> W[View AI Explanations]
+    W --> X{Ask More Questions?}
+    X -->|Yes| T
+    X -->|No| Y{Refine Analysis?}
+    S -->|No| Y
+    Y -->|Yes| Z[Add Revision Instructions]
+    Z --> AA[Revise Analysis]
+    AA --> O
+    Y -->|No| BB[End Analysis]
+    
+    style A fill:#e1f5fe
+    style BB fill:#c8e6c9
+    style O fill:#fff3e0
+    style T fill:#f3e5f5
+    style V fill:#e8f5e8
+```
+
 ## Getting Started
 
 1. Clone the repository:
