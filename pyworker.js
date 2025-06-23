@@ -14,6 +14,7 @@ import numpy as np
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, precision_recall_fscore_support
+from sklearn.preprocessing import LabelEncoder
     `);
   } catch (error) {
     showError("Failed to initialize Python environment: " + error.message);
@@ -22,7 +23,7 @@ from sklearn.metrics import confusion_matrix, precision_recall_fscore_support
   }
 }
 
-export async function extractAndExecuteCode(response, currentData, currentColumns) {
+export async function extractAndExecuteCode(response, currentData, currentColumns, derivedMetricsOnly = false) {
   const codeMatch = response.match(/```python\n([\s\S]*?)\n```/);
   if (!codeMatch) throw new Error("No Python code found in response");
 
@@ -132,6 +133,17 @@ else:
             mode_val = df[col].mode()
             df[col] = df[col].fillna(mode_val[0] if len(mode_val) > 0 else 'Unknown')
 
+# Encode categorical variables for machine learning
+from sklearn.preprocessing import LabelEncoder
+categorical_cols = df.select_dtypes(include=['object']).columns
+label_encoders = {}
+
+for col in categorical_cols:
+    if df[col].dtype == 'object':
+        le = LabelEncoder()
+        df[col] = le.fit_transform(df[col].astype(str))
+        label_encoders[col] = le
+
 # Only drop rows if we still have data
 if not df.empty:
     initial_rows = len(df)
@@ -152,6 +164,13 @@ ${currentCode.replace('df.fillna(df.median(), inplace=True)', 'numeric_cols = df
         raise
 """)
 
+${derivedMetricsOnly ? `
+# For derived metrics only, return the enhanced dataframe
+enhanced_data = {
+    'headers': list(df.columns),
+    'rows': df.to_dict('records')
+}
+` : `
 # Store X and y in global scope if not already there
 if 'X' not in globals():
     X = df[df.columns[:-1]]
@@ -173,9 +192,17 @@ globals()['X'] = X
 globals()['y'] = y
 globals()['y_pred'] = model.predict(X)
 globals()['feature_names'] = list(X.columns)
+`}
     `);
     
-    const resultJson = await pyodide.runPythonAsync(`
+    let resultJson;
+    if (derivedMetricsOnly) {
+      resultJson = await pyodide.runPythonAsync(`
+import json
+json.dumps(enhanced_data)
+`);
+    } else {
+      resultJson = await pyodide.runPythonAsync(`
 def process_tree():
     try:
         if 'model' not in globals():
@@ -237,6 +264,7 @@ def process_tree():
 # Call the function and return its result
 process_tree()
 `);
+    }
     
     if (!resultJson) {
         throw new Error("Failed to get result from Python - no JSON returned");
@@ -247,6 +275,11 @@ process_tree()
         
         if (!result) {
             throw new Error("JSON parsing resulted in null or undefined");
+        }
+        
+        if (derivedMetricsOnly) {
+            // For derived metrics, return the enhanced data structure
+            return { enhancedData: result };
         }
         
         if (!result.tree || typeof result.tree !== 'object') {
