@@ -23,20 +23,47 @@ export function markdownToHtml(markdown) {
   return markdown ? marked.parse(markdown) : "";
 }
 
+// Store relevant paths for highlighting
+let currentRelevantPaths = [];
+
+export function setRelevantPaths(paths) {
+  currentRelevantPaths = paths || [];
+}
+
+export function isNodeRelevant(nodeText, feature = null) {
+  if (!currentRelevantPaths || currentRelevantPaths.length === 0) return false;
+  
+  const text = nodeText.toLowerCase();
+  const featureLower = feature ? feature.toLowerCase() : '';
+  
+  return currentRelevantPaths.some(path => {
+    const pathLower = path.toLowerCase();
+    return text.includes(pathLower) || 
+           pathLower.includes(text.replace(/[^a-z0-9\s]/g, '').trim()) ||
+           (feature && (featureLower.includes(pathLower) || pathLower.includes(featureLower)));
+  });
+}
+
 export function renderTreeCollapsible(node, branchLabel = null) {
   if (node.prediction !== undefined) {
+    const predictionText = `Prediction: ${node.prediction}`;
+    const isHighlighted = isNodeRelevant(predictionText);
+    const highlightClass = isHighlighted ? 'tree-highlighted prediction-highlighted' : '';
+    const highlightStyle = isHighlighted ? 
+      'background-color: #d1ecf1; border: 2px solid #17a2b8; border-radius: 0.375rem; padding: 0.25rem 0.5rem; transition: all 0.3s ease;' : '';
+    
     // Render YES/NO badge and prediction in a flex row if branchLabel is provided
     if (branchLabel) {
       return `<div style="display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.25em;">
         <span class="badge bg-${branchLabel === 'YES' ? 'success' : 'danger'} me-2">${branchLabel}</span>
-        <span class="d-inline-flex align-items-center" style="font-size: 1em;">
+        <span class="d-inline-flex align-items-center ${highlightClass}" style="font-size: 1em; ${highlightStyle}">
           <i class="bi bi-check-circle-fill me-2"></i>
           <strong>Prediction:</strong> <span class="ms-2">${node.prediction}</span>
         </span>
       </div>`;
     } else {
       // Root node prediction (shouldn't happen, but fallback)
-      return `<span class="d-inline-flex align-items-center">
+      return `<span class="d-inline-flex align-items-center ${highlightClass}" style="${highlightStyle}">
         <i class="bi bi-check-circle-fill me-2"></i>
         <strong>Prediction:</strong> <span class="ms-2">${node.prediction}</span>
       </span>`;
@@ -44,10 +71,16 @@ export function renderTreeCollapsible(node, branchLabel = null) {
   }
 
   const threshold = typeof node.threshold === "number" ? node.threshold.toFixed(3) : node.threshold;
+  const summaryText = `Is ${node.feature} < ${threshold}?`;
+  const isHighlighted = isNodeRelevant(summaryText, node.feature);
+  const highlightClass = isHighlighted ? 'tree-highlighted' : '';
+  const highlightStyle = isHighlighted ? 
+    'background-color: #fff3cd; border: 2px solid #ffc107; border-radius: 0.375rem; padding: 0.5rem; transition: all 0.3s ease;' : 'cursor: pointer;';
+  const shouldExpand = isHighlighted ? 'open' : '';
 
   return `
-    <details class="mb-2">
-      <summary class="text-break fw-bold text-primary cursor-pointer" style="cursor: pointer;">
+    <details class="mb-2" ${shouldExpand}>
+      <summary class="text-break fw-bold text-primary cursor-pointer ${highlightClass}" style="${highlightStyle}">
         <i class="bi bi-diagram-3 me-2"></i>
         Is <strong>${node.feature}</strong> &lt; <strong>${threshold}</strong>?
       </summary>

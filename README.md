@@ -8,8 +8,10 @@ An interactive web application for building and visualizing decision trees from 
 - **Sample Datasets**: Pre-configured datasets for quick experimentation
 - **AI-Powered Derived Metrics**: Generate meaningful derived features from your data using AI
 - **Granular Feature Selection**: Choose exactly which derived metrics to include in your decision tree
+- **Interactive Tree Analysis**: Ask natural language questions about your decision tree and get visual highlights
+- **Smart Tree Highlighting**: Automatically highlights relevant decision paths and nodes based on your questions
 - **Modern UI**: Clean, responsive Bootstrap 5 interface with intuitive step-by-step workflow
-- **Interactive Visualization**: Easy-to-read decision tree output
+- **Interactive Visualization**: Easy-to-read decision tree output with expandable/collapsible nodes
 - **Performance Metrics**: View model evaluation metrics including accuracy, precision, and more
 - **Revision System**: Ability to refine and improve your analysis
 - **Python Integration**: Seamless Python execution in the browser using Pyodide
@@ -61,7 +63,14 @@ An interactive web application for building and visualizing decision trees from 
    - Examine model performance metrics
    - Understand the decision paths with original and derived features
 
-7. **Refine Analysis** (Optional):
+7. **Interactive Tree Analysis**:
+   - Ask questions about your decision tree in natural language
+   - Examples: "What is the major impact on high prices?", "Which features lead to positive outcomes?"
+   - View AI-powered explanations and visual highlights of relevant tree sections
+   - Automatically highlights decision nodes and prediction outcomes
+   - Clear highlights and ask new questions for different insights
+
+8. **Refine Analysis** (Optional):
    - Add revision instructions
    - Click "Revise Analysis" to improve the model
 
@@ -101,6 +110,44 @@ Derived metrics are new features automatically created from your existing data c
 - **Data Insights**: Discover relationships and patterns you might have missed
 - **Full Control**: Choose exactly which derived metrics to use in your analysis
 
+## Interactive Tree Analysis
+
+Transform your decision tree analysis with AI-powered natural language queries and visual highlighting:
+
+### What You Can Ask
+Ask questions in plain English about your decision tree to gain deeper insights:
+- **Feature Importance**: "What is the major impact on high prices?"
+- **Decision Paths**: "Which features lead to positive outcomes?"
+- **Model Behavior**: "What causes low accuracy predictions?"
+- **Specific Features**: "How important is [feature_name] in the model?"
+- **Outcome Analysis**: "What leads to the best results?"
+
+### Visual Highlighting System
+- **Automatic Highlighting**: Relevant decision nodes are highlighted in yellow with pulsing animations
+- **Prediction Highlighting**: Important prediction outcomes are highlighted in blue
+- **Auto-Expansion**: Relevant tree sections automatically expand for easy viewing
+- **Smart Scrolling**: Automatically scrolls to the most relevant parts of the tree
+- **Clear & Re-analyze**: Ask multiple questions with automatic highlight clearing
+
+### How It Works
+1. **Natural Language Processing**: AI analyzes your question in the context of your decision tree
+2. **Intelligent Path Finding**: Identifies the most relevant decision paths and features
+3. **Visual Enhancement**: Highlights important nodes with smooth animations and clear borders
+4. **Contextual Explanations**: Provides detailed explanations and key insights about the highlighted areas
+5. **Interactive Exploration**: Ask follow-up questions to explore different aspects of your model
+
+### Example Queries
+```
+"What is the major impact on high sales?"
+→ Highlights all decision nodes that significantly affect sales outcomes
+
+"Which path leads to the best customer satisfaction?"
+→ Shows the decision sequence that results in highest satisfaction scores
+
+"How does price affect the final decision?"
+→ Highlights all nodes where price is used as a decision criterion
+```
+
 ## Performance Metrics
 
 The application provides key model evaluation metrics:
@@ -129,6 +176,11 @@ The application provides key model evaluation metrics:
   - LLM Foundry API
   - AI-powered derived metrics generation
   - Intelligent feature engineering
+  - Natural language tree analysis
+- **Visualization**:
+  - Lit-HTML for performant rendering
+  - CSS animations and transitions
+  - Interactive tree highlighting
 
 ## Security
 

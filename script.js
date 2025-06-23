@@ -1,5 +1,5 @@
 import { asyncLLM } from "https://cdn.jsdelivr.net/npm/asyncllm@2";
-import {showLoading, showError, setupFormPersistence, displayMetrics, displayDecisionTree, renderMarkdownResponse} from "./utils.js";
+import {showLoading, showError, setupFormPersistence, displayMetrics, displayDecisionTree, renderMarkdownResponse, setRelevantPaths} from "./utils.js";
 import { handleFileUpload, loadSampleDataset, displayDataPreview, populateTargetColumn } from "./data.js";
 import { initializePyodide, extractAndExecuteCode } from "./pyworker.js";
 
@@ -60,6 +60,12 @@ function setupEventListeners() {
   document
     .getElementById("selectNoneDerived")
     .addEventListener("click", selectNoneDerivedMetrics);
+  document
+    .getElementById("analyzeTreeBtn")
+    .addEventListener("click", analyzeTreeQuery);
+  document
+    .getElementById("clearHighlightBtn")
+    .addEventListener("click", clearTreeHighlights);
 }
 
 function renderSampleDatasets() {
@@ -198,6 +204,140 @@ function selectNoneDerivedMetrics() {
 
 function getSelectedDerivedMetrics() {
   return Array.from(document.querySelectorAll('#derivedMetricsSelection input:checked')).map(cb => cb.value);
+}
+
+async function analyzeTreeQuery() {
+  const query = document.getElementById("treeQuery").value.trim();
+  if (!query) {
+    showError("Please enter a question about the decision tree.");
+    return;
+  }
+  
+  if (!currentDecisionTree) {
+    showError("No decision tree available to analyze.");
+    return;
+  }
+  
+  const apiKey = document.getElementById("apiKeyInput").value;
+  const baseUrl = document.getElementById("baseUrlInput").value;
+  const model = document.getElementById("modelInput").value;
+  
+  if (!apiKey) {
+    showError("Please enter your OpenAI API key in the advanced settings.");
+    return;
+  }
+  
+  try {
+    showLoading(true);
+    // Clear previous highlights and get new analysis
+    setRelevantPaths([]);
+    const analysis = await getTreeAnalysis(baseUrl, apiKey, model, query, currentDecisionTree);
+    displayTreeAnalysis(analysis);
+    // Set relevant paths and re-render tree with highlights
+    setRelevantPaths(analysis.relevantPaths);
+    displayDecisionTree(currentDecisionTree.tree);
+    // Scroll to first highlighted element
+    setTimeout(() => {
+      const firstHighlighted = document.querySelector('.tree-highlighted');
+      if (firstHighlighted) {
+        firstHighlighted.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+  } catch (error) {
+    showError("Failed to analyze tree: " + error.message);
+  } finally {
+    showLoading(false);
+  }
+}
+
+async function getTreeAnalysis(baseUrl, apiKey, model, query, treeData) {
+  const systemPrompt = `You are a decision tree analysis expert. Analyze the given decision tree structure and answer the user's question by identifying relevant paths and nodes.
+
+Decision Tree Structure: ${JSON.stringify(treeData.tree)}
+Feature Names: ${treeData.feature_names.join(", ")}
+Model Metrics: ${JSON.stringify(treeData.metrics)}
+
+Your task is to:
+1. Understand the user's question about the decision tree
+2. Identify which nodes, features, and decision paths are most relevant
+3. Provide a clear explanation
+4. Return specific node paths that should be highlighted
+
+Please return a JSON response with this structure:
+{
+  "explanation": "Clear explanation answering the user's question",
+  "relevantPaths": ["path descriptions or feature names that are most relevant"],
+  "keyInsights": ["important insights about the tree structure"]
+}
+
+Focus on identifying:
+- Important features that drive decisions
+- Critical decision points
+- Paths leading to specific outcomes
+- Feature importance relative to the question`;
+
+  const response = await fetch(`${baseUrl}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: query },
+      ],
+    }),
+  });
+
+  const data = await response.json();
+  const content = data.choices[0].message.content;
+  
+  // Try to extract JSON from the response
+  try {
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]);
+    }
+  } catch (e) {
+    // Fallback if JSON parsing fails
+  }
+  
+  return {
+    explanation: content,
+    relevantPaths: [],
+    keyInsights: []
+  };
+}
+
+function displayTreeAnalysis(analysis) {
+  const container = document.getElementById("treeAnalysisResult");
+  const textContainer = document.getElementById("treeAnalysisText");
+  
+  let content = `<p><strong>Answer:</strong> ${analysis.explanation}</p>`;
+  
+  if (analysis.keyInsights && analysis.keyInsights.length > 0) {
+    content += `<p><strong>Key Insights:</strong></p><ul>`;
+    analysis.keyInsights.forEach(insight => {
+      content += `<li>${insight}</li>`;
+    });
+    content += `</ul>`;
+  }
+  
+  textContainer.innerHTML = content;
+  container.classList.remove("d-none");
+}
+
+function clearTreeHighlights() {
+  // Clear relevant paths and re-render tree without highlights
+  setRelevantPaths([]);
+  if (currentDecisionTree) {
+    displayDecisionTree(currentDecisionTree.tree);
+  }
+  
+  // Hide analysis result
+  document.getElementById("treeAnalysisResult").classList.add("d-none");
 }
 
 function updatePrompt() {
