@@ -53,12 +53,6 @@ flowchart TD
     Z --> AA[Revise Analysis]
     AA --> O
     Y -->|No| BB[End Analysis]
-    
-    style A fill:#e1f5fe
-    style BB fill:#c8e6c9
-    style O fill:#fff3e0
-    style T fill:#f3e5f5
-    style V fill:#e8f5e8
 ```
 
 ## Getting Started
