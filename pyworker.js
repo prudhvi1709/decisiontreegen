@@ -1,5 +1,5 @@
 import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v0.27.0/full/pyodide.mjs";
-import { showError, showLoading } from './utils.js';
+import { showError, showSuccess, showInfo, showLoading } from './utils.js';
 
 let pyodide = null;
 
@@ -8,6 +8,7 @@ export async function initializePyodide() {
     showLoading(true);
     pyodide = await loadPyodide();
     await pyodide.loadPackage(["pandas", "scikit-learn", "numpy"]);
+    showInfo("Python environment initialized successfully!");
     await pyodide.runPython(`
 import pandas as pd
 import numpy as np

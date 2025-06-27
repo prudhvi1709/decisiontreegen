@@ -1,4 +1,4 @@
-import { showError, showLoading } from './utils.js';
+import { showError, showSuccess, showInfo, showLoading } from './utils.js';
 
 export function parseCSV(text) {
   const lines = text.trim().split("\n");
@@ -55,6 +55,7 @@ export async function handleFileUpload(event, processDataCallback) {
       throw new Error("Unsupported file format. Please use CSV or XLSX files.");
     }
 
+    showSuccess(`File uploaded successfully! Found ${data.rows.length} rows with ${data.headers.length} columns.`);
     processDataCallback(data);
   } catch (error) {
     showError("Failed to process file: " + error.message);
@@ -70,6 +71,7 @@ export async function loadSampleDataset(url, target, processDataCallback) {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const csvText = await response.text();
     const data = parseCSV(csvText);
+    showSuccess(`Sample dataset loaded successfully! Found ${data.rows.length} rows with ${data.headers.length} columns.`);
     processDataCallback(data, target);
   } catch (error) {
     showError("Failed to load sample dataset: " + error.message);

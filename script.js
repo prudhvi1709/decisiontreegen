@@ -1,5 +1,5 @@
 import { asyncLLM } from "https://cdn.jsdelivr.net/npm/asyncllm@2";
-import {showLoading, showError, setupFormPersistence, displayMetrics, displayDecisionTree, renderMarkdownResponse, setRelevantPaths} from "./utils.js";
+import {showLoading, showError, showSuccess, showInfo, showWarning, setupFormPersistence, displayMetrics, displayDecisionTree, renderMarkdownResponse, setRelevantPaths} from "./utils.js";
 import { handleFileUpload, loadSampleDataset, displayDataPreview, populateTargetColumn } from "./data.js";
 import { initializePyodide, extractAndExecuteCode } from "./pyworker.js";
 
@@ -137,6 +137,7 @@ async function generateDerivedMetrics() {
     const derivedMetricsData = await generateDerivedMetricsWithAI(baseUrl, apiKey, model, selectedColumns, customMetrics);
     enhancedData = derivedMetricsData;
     displayEnhancedDataPreview(derivedMetricsData);
+    showSuccess(`Successfully generated ${derivedMetricsColumns.length} derived metrics!`);
     document.getElementById("step2_5").classList.remove("d-none");
     document.getElementById("step2_5").scrollIntoView({ behavior: "smooth" });
   } catch (error) {
@@ -148,6 +149,7 @@ async function generateDerivedMetrics() {
 
 function skipToDTAnalysis() {
   enhancedData = currentData;
+  showInfo("Skipped derived metrics generation. Proceeding with original dataset.");
   proceedToAnalysis();
 }
 
@@ -196,10 +198,12 @@ function populateDerivedMetricsSelection() {
 
 function selectAllDerivedMetrics() {
   document.querySelectorAll('#derivedMetricsSelection input[type="checkbox"]').forEach(cb => cb.checked = true);
+  showInfo("All derived metrics selected for decision tree.");
 }
 
 function selectNoneDerivedMetrics() {
   document.querySelectorAll('#derivedMetricsSelection input[type="checkbox"]').forEach(cb => cb.checked = false);
+  showInfo("All derived metrics deselected.");
 }
 
 function getSelectedDerivedMetrics() {
@@ -236,6 +240,7 @@ async function analyzeTreeQuery() {
     // Set relevant paths and re-render tree with highlights
     setRelevantPaths(analysis.relevantPaths);
     displayDecisionTree(currentDecisionTree.tree);
+    showInfo("Tree analysis complete! Relevant nodes are highlighted below.");
     // Scroll to first highlighted element
     setTimeout(() => {
       const firstHighlighted = document.querySelector('.tree-highlighted');
@@ -335,6 +340,7 @@ function clearTreeHighlights() {
   if (currentDecisionTree) {
     displayDecisionTree(currentDecisionTree.tree);
   }
+  showInfo("Tree highlights cleared.");
   
   // Hide analysis result
   document.getElementById("treeAnalysisResult").classList.add("d-none");
@@ -516,6 +522,7 @@ The tree visualization and metrics will be handled automatically.`;
     currentDecisionTree = result;
     displayDecisionTree(result.tree);
     displayMetrics(result.metrics);
+    showSuccess(`Decision tree model created successfully! Accuracy: ${(result.metrics.accuracy * 100).toFixed(1)}%`);
     document.getElementById("step5").classList.remove("d-none");
     document.getElementById("step6").classList.remove("d-none");
   } catch (error) {

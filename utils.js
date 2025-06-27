@@ -9,14 +9,39 @@ export function showLoading(show) {
 }
 
 export function showError(message) {
-  const alertHtml = `
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      <i class="bi bi-exclamation-triangle me-2"></i>
-      ${message}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  `;
-  document.body.insertAdjacentHTML("afterbegin", alertHtml);
+  window.bootstrapAlert({ 
+    title: '<i class="bi bi-exclamation-triangle"></i> Error', 
+    body: message, 
+    color: "danger",
+    position: "top-0 end-0"
+  });
+}
+
+export function showSuccess(message) {
+  window.bootstrapAlert({ 
+    title: '<i class="bi bi-check-circle"></i> Success', 
+    body: message, 
+    color: "success",
+    position: "top-0 end-0"
+  });
+}
+
+export function showInfo(message) {
+  window.bootstrapAlert({ 
+    title: '<i class="bi bi-info-circle"></i> Info', 
+    body: message, 
+    color: "info",
+    position: "top-0 end-0"
+  });
+}
+
+export function showWarning(message) {
+  window.bootstrapAlert({ 
+    title: '<i class="bi bi-exclamation-triangle"></i> Warning', 
+    body: message, 
+    color: "warning",
+    position: "top-0 end-0"
+  });
 }
 
 export function markdownToHtml(markdown) {
