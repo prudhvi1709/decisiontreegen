@@ -146,7 +146,7 @@ export function displayMetrics(metrics) {
   container.innerHTML = metricsData
     .map(metric => `
     <div class="col-lg-2 col-md-4 col-6">
-      <div class="bg-light p-3 rounded text-center">
+      <div class="p-3 rounded text-center">
         <div class="fs-4 fw-bold text-primary">${metric.value}</div>
         <div class="small text-muted">${metric.label}</div>
       </div>
